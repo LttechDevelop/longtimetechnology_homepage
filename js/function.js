@@ -114,7 +114,7 @@ $(function () {
 			}
 			try {
 				var isAbsolute = /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(href);
-				var urlObj = isAbsolute ? new URL(href) : new URL(href, window.location.origin);
+				var urlObj = isAbsolute ? new URL(href) : new URL(href, document.baseURI || window.location.href);
 				urlObj.searchParams.set('lang', lang);
 				var nextHref = isAbsolute ? urlObj.toString() : urlObj.pathname + urlObj.search + urlObj.hash;
 				$link.attr('href', nextHref);
@@ -231,6 +231,10 @@ function rand() {
 
 $(function () {
     var pathname = window.location.pathname || '/';
+    var siteBasePath = window.SITE_BASE_PATH || '/';
+    if (siteBasePath !== '/' && pathname.indexOf(siteBasePath) === 0) {
+        pathname = '/' + pathname.slice(siteBasePath.length);
+    }
     var ensureTrailingSlash = function (value) {
         if (!value) return '/';
         return value.endsWith('/') ? value : value + '/';
@@ -242,7 +246,16 @@ $(function () {
             if (!href || href.indexOf('javascript:') === 0 || /^https?:\/\//i.test(href)) {
                 return false;
             }
-            var linkPath = ensureTrailingSlash(href);
+            var linkPath = href;
+            try {
+                linkPath = new URL(href, document.baseURI || window.location.href).pathname;
+                if (siteBasePath !== '/' && linkPath.indexOf(siteBasePath) === 0) {
+                    linkPath = '/' + linkPath.slice(siteBasePath.length);
+                }
+            } catch (error) {
+                linkPath = href;
+            }
+            linkPath = ensureTrailingSlash(linkPath);
             return linkPath === targetPath;
         }).first();
     };

@@ -303,7 +303,7 @@
                     });
                 }
 
-                return loadScript('/js/vendor/marked.min.js')
+                return loadScript('js/vendor/marked.min.js')
                     .then(function (parser) {
                         state.parser = parser;
                         return parser;

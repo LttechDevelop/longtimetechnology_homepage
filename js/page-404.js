@@ -4,6 +4,10 @@
     function handleLegacyRedirects() {
         var supportedLanguages = ['tw', 'cn', 'en', 'jp'];
         var pathname = window.location.pathname || '/';
+        var siteBasePath = window.SITE_BASE_PATH || '/';
+        if (siteBasePath !== '/' && pathname.indexOf(siteBasePath) === 0) {
+            pathname = '/' + pathname.slice(siteBasePath.length);
+        }
         var normalizedPath = pathname.toLowerCase().replace(/\/+$/, '') || '/';
         var langParam = null;
 
@@ -24,7 +28,7 @@
                 if (langParam) {
                     destination += '?lang=' + encodeURIComponent(langParam);
                 }
-                window.location.replace(destination);
+                window.location.replace(window.withSiteBase ? window.withSiteBase(destination) : destination);
                 return true;
             }
         }
@@ -35,7 +39,8 @@
         };
 
         if (Object.prototype.hasOwnProperty.call(redirectMap, normalizedPath)) {
-            window.location.replace(redirectMap[normalizedPath]);
+            var mappedDestination = redirectMap[normalizedPath];
+            window.location.replace(window.withSiteBase ? window.withSiteBase(mappedDestination) : mappedDestination);
             return true;
         }
 
@@ -65,7 +70,7 @@
         var queryString = searchParams.toString();
         var hash = window.location.hash || '';
         var nextUrl = basePath + (queryString ? '?' + queryString : '') + hash;
-        window.location.replace(nextUrl);
+        window.location.replace(window.withSiteBase ? window.withSiteBase(nextUrl) : nextUrl);
         return true;
     }
 
