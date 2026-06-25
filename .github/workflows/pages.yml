@@ -19,12 +19,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
@@ -33,18 +33,38 @@ jobs:
       - name: Generate news index
         run: npm run build:news
 
-      # 如果你還有其它打包流程，放在這裡
-      # - name: Build site
-      #   run: npm run build
+      - name: Prepare Pages artifact
+        run: |
+          rm -rf _site
+          mkdir -p _site
+          cp -R \
+            404.html \
+            CNAME \
+            about \
+            assets \
+            contact \
+            css \
+            dist \
+            esg \
+            footer.html \
+            header.html \
+            index.html \
+            investors \
+            js \
+            news \
+            products \
+            robots.txt \
+            sitemap.xml \
+            _site/
+          find _site -name ".DS_Store" -delete
 
       - name: Configure Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
-      # 將整個專案根目錄（含 dist/news-index.json、news/*.md、news.html 等）上傳為靜態網站
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
-          path: .
+          path: _site
 
   deploy:
     needs: build
@@ -55,4 +75,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
