@@ -3,7 +3,7 @@
     var isLocal = /^(localhost|127\.0\.0\.1)(:\d+)?$/i.test(locationRef.host);
     var isFileProtocol = locationRef.protocol === 'file:';
     var canonicalHost = 'www.lttech.com.tw';
-    var needsCanonicalRedirect = locationRef.hostname && locationRef.hostname !== canonicalHost;
+    var needsCanonicalRedirect = locationRef.hostname === 'lttech.com.tw';
 
     if (!isLocal && !isFileProtocol && (locationRef.protocol === 'http:' || needsCanonicalRedirect)) {
         var targetHost = needsCanonicalRedirect ? canonicalHost : locationRef.host;
